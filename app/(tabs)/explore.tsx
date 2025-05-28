@@ -1,130 +1,140 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
+import { useCallback, useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+
+const ZOOM_LEVELS = [1, 2, 3, 4];
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
 
 export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const [currentZoomLevel, setCurrentZoomLevel] = useState(0);
+
+  const pinchGesture = Gesture.Pinch()
+    .onUpdate((event) => {
+      const newScale = savedScale.value * event.scale;
+      if (newScale >= MIN_ZOOM && newScale <= MAX_ZOOM) {
+        scale.value = newScale;
       }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          and{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{" "}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the
-          web version, press <ThemedText type="defaultSemiBold">w</ThemedText>{" "}
-          in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the{" "}
-          <ThemedText type="defaultSemiBold">@2x</ThemedText> and{" "}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to
-          provide files for different screen densities
-        </ThemedText>
-        <Image
-          source={require("@/assets/images/react-logo.png")}
-          style={{ alignSelf: "center" }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{" "}
-          to see how to load{" "}
-          <ThemedText style={{ fontFamily: "SpaceMono" }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{" "}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook
-          lets you inspect what the user&apos;s current color scheme is, and so
-          you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{" "}
-          <ThemedText type="defaultSemiBold">
-            components/HelloWave.tsx
-          </ThemedText>{" "}
-          component uses the powerful{" "}
-          <ThemedText type="defaultSemiBold">
-            react-native-reanimated
-          </ThemedText>{" "}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The{" "}
-              <ThemedText type="defaultSemiBold">
-                components/ParallaxScrollView.tsx
-              </ThemedText>{" "}
-              component provides a parallax effect for the header image.
+    })
+    .onEnd(() => {
+      savedScale.value = scale.value;
+    });
+
+  const handleZoomIn = useCallback(() => {
+    const nextLevel = (currentZoomLevel + 1) % ZOOM_LEVELS.length;
+    setCurrentZoomLevel(nextLevel);
+    scale.value = withSpring(ZOOM_LEVELS[nextLevel]);
+    savedScale.value = ZOOM_LEVELS[nextLevel];
+  }, [currentZoomLevel]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }, { translateX: 0 }, { translateY: 0 }],
+  }));
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <ThemedView style={styles.container}>
+          <View style={styles.headerContainer}>
+            <ThemedText type="title" style={styles.header}>
+              Explore
             </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+          </View>
+
+          <View style={styles.contentContainer}>
+            <View style={styles.mapContainer}>
+              <GestureDetector gesture={pinchGesture}>
+                <Animated.View style={[styles.mapWrapper, animatedStyle]}>
+                  <Image
+                    source={require("@/assets/images/placeholder-map.jpg")}
+                    style={styles.map}
+                    contentFit="cover"
+                  />
+                </Animated.View>
+              </GestureDetector>
+            </View>
+
+            <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
+              <Ionicons name="add-circle" size={32} color="#A1CEDC" />
+              <ThemedText style={styles.zoomText}>
+                {ZOOM_LEVELS[currentZoomLevel]}x
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </ThemedView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
+  container: {
+    flex: 1,
   },
-  titleContainer: {
+  headerContainer: {
+    backgroundColor: "white",
+    zIndex: 1,
+  },
+  header: {
+    padding: 16,
+  },
+  contentContainer: {
+    flex: 1,
+    position: "relative",
+  },
+  mapContainer: {
+    flex: 1,
+    backgroundColor: "#f0f0f0",
+    overflow: "hidden",
+  },
+  mapWrapper: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    transformOrigin: "center",
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+  zoomButton: {
+    position: "absolute",
+    bottom: 32,
+    right: 32,
+    backgroundColor: "white",
+    borderRadius: 25,
+    padding: 12,
     flexDirection: "row",
-    gap: 8,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  zoomText: {
+    marginLeft: 8,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
