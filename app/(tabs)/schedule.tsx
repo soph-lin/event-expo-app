@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, FlatList, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +14,7 @@ export default function ScheduleScreen() {
   const router = useRouter();
   const fadeAnim = new Animated.Value(0);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const animatedValues = useRef<Animated.Value[]>([]);
 
   const loadFavorites = async () => {
     try {
@@ -25,6 +26,22 @@ export default function ScheduleScreen() {
         return;
       }
       setFavorites(JSON.parse(existingFavorites));
+
+      // Reset and initialize animation values
+      animatedValues.current = sessions.map(() => new Animated.Value(0));
+
+      // Start staggered animations
+      Animated.stagger(
+        100, // Delay between each animation
+        animatedValues.current.map((value) =>
+          Animated.spring(value, {
+            toValue: 1,
+            tension: 50,
+            friction: 7,
+            useNativeDriver: true,
+          })
+        )
+      ).start();
     } catch (error) {
       console.error("Error loading favorites:", error);
       // If there's an error, ensure we start with empty favorites
@@ -65,13 +82,30 @@ export default function ScheduleScreen() {
     }
   };
 
-  const renderSession = ({ item }: { item: Session }) => (
-    <SessionCard
-      session={item}
-      isFavorited={favorites.includes(item.id)}
-      onFavoritePress={addToFavorites}
-    />
-  );
+  const renderSession = ({ item, index }: { item: Session; index: number }) => {
+    const translateY =
+      animatedValues.current[index]?.interpolate({
+        inputRange: [0, 1],
+        outputRange: [50, 0],
+      }) || new Animated.Value(0);
+
+    const opacity = animatedValues.current[index] || new Animated.Value(0);
+
+    return (
+      <Animated.View
+        style={{
+          opacity,
+          transform: [{ translateY }],
+        }}
+      >
+        <SessionCard
+          session={item}
+          isFavorited={favorites.includes(item.id)}
+          onFavoritePress={addToFavorites}
+        />
+      </Animated.View>
+    );
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

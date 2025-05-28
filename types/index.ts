@@ -9,4 +9,5 @@ export type Speaker = {
   id: string;
   name: string;
   bio: string;
+  photo: string;
 }; 

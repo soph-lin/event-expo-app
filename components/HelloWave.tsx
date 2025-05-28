@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -13,15 +14,18 @@ import { ThemedText } from "@/components/ThemedText";
 export function HelloWave() {
   const rotationAnimation = useSharedValue(0);
 
-  useEffect(() => {
+  const animate = useCallback(() => {
     rotationAnimation.value = withRepeat(
       withSequence(
         withTiming(25, { duration: 150 }),
-        withTiming(0, { duration: 150 }),
+        withTiming(0, { duration: 150 })
       ),
-      4, // Run the animation 4 times
+      4 // Run the animation 4 times
     );
   }, [rotationAnimation]);
+
+  // Trigger animation when screen comes into focus
+  useFocusEffect(animate);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotationAnimation.value}deg` }],

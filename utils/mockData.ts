@@ -5,7 +5,22 @@ export const sessions = [
 ];
 
 export const speakers = [
-  { id: '1', name: 'Jane Doe', bio: 'Jane is a keynote speaker with expertise in technology.' },
-  { id: '2', name: 'John Smith', bio: 'John is a panelist known for his insights on innovation.' },
-  { id: '3', name: 'Alice Johnson', bio: 'Alice is a workshop leader specializing in design thinking.' },
+  { 
+    id: '1', 
+    name: 'Jane Doe', 
+    bio: 'Jane is a keynote speaker with expertise in technology.',
+    photo: 'https://randomuser.me/api/portraits/women/1.jpg'
+  },
+  { 
+    id: '2', 
+    name: 'John Smith', 
+    bio: 'John is a panelist known for his insights on innovation.',
+    photo: 'https://randomuser.me/api/portraits/men/1.jpg'
+  },
+  { 
+    id: '3', 
+    name: 'Alice Johnson', 
+    bio: 'Alice is a workshop leader specializing in design thinking.',
+    photo: 'https://randomuser.me/api/portraits/women/2.jpg'
+  },
 ]; 
