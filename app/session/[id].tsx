@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -12,6 +13,7 @@ import { sessions } from "@/utils/mockData";
 export default function SessionDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { colors } = useTheme();
   const session = sessions.find((s) => s.id === id);
   const [isFavorite, setIsFavorite] = React.useState(false);
 
@@ -49,42 +51,67 @@ export default function SessionDetailsScreen() {
 
   if (!session) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ThemedText>Session not found.</ThemedText>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["bottom"]}
+      >
+        <ThemedView style={styles.content}>
+          <ThemedText>Session not found.</ThemedText>
+        </ThemedView>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={["bottom"]}
+    >
       <Stack.Screen
-        options={{ title: "Event Description", headerBackTitle: "All Events" }}
+        options={{
+          title: "Event Description",
+          headerBackTitle: "All Events",
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.text,
+          animation: "slide_from_right",
+          presentation: "card",
+          gestureEnabled: true,
+          gestureDirection: "horizontal",
+        }}
       />
-      <ThemedView style={styles.header}>
-        <ThemedText type="title" style={styles.title}>
-          {session.title}
+      <ThemedView style={styles.content}>
+        <ThemedView style={styles.header}>
+          <ThemedText type="title" style={styles.title}>
+            {session.title}
+          </ThemedText>
+          <TouchableOpacity onPress={toggleFavorite}>
+            <Ionicons
+              name={isFavorite ? "star" : "star-outline"}
+              size={24}
+              color="#FFD700"
+            />
+          </TouchableOpacity>
+        </ThemedView>
+        <ThemedText style={styles.details}>
+          {session.time} - {session.speaker}
         </ThemedText>
-        <TouchableOpacity onPress={toggleFavorite}>
-          <Ionicons
-            name={isFavorite ? "star" : "star-outline"}
-            size={24}
-            color="#FFD700"
-          />
-        </TouchableOpacity>
+        <ThemedText style={styles.description}>
+          This is a detailed description of the session. It can include more
+          information about the topic, speaker, and what attendees can expect.
+        </ThemedText>
       </ThemedView>
-      <ThemedText style={styles.details}>
-        {session.time} - {session.speaker}
-      </ThemedText>
-      <ThemedText style={styles.description}>
-        This is a detailed description of the session. It can include more
-        information about the topic, speaker, and what attendees can expect.
-      </ThemedText>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  content: {
     flex: 1,
     padding: 20,
   },

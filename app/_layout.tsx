@@ -1,5 +1,5 @@
-import { Stack } from "expo-router";
-import { useEffect } from "react";
+import { Stack, usePathname } from "expo-router";
+import { useMemo } from "react";
 import { useColorScheme, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -8,10 +8,12 @@ import { ThemeProvider } from "@/hooks/useTheme";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    // You can add any initialization logic here
-  }, []);
+  const isSessionPage = useMemo(
+    () => pathname.startsWith("/session/"),
+    [pathname]
+  );
 
   return (
     <SafeAreaProvider>
@@ -20,10 +22,19 @@ export default function RootLayout() {
           <Stack
             screenOptions={{
               headerShown: false,
+              animation: "default",
+              presentation: "card",
+              animationTypeForReplace: "push",
+              gestureEnabled: true,
+              gestureDirection: "horizontal",
+              fullScreenGestureEnabled: true,
             }}
           />
           <View
-            style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}
+            style={[
+              { position: "absolute", top: 0, right: 0, zIndex: 1000 },
+              isSessionPage && { opacity: 0, pointerEvents: "none" },
+            ]}
           >
             <ThemePicker />
           </View>

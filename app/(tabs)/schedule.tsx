@@ -21,7 +21,6 @@ export default function ScheduleScreen() {
   const loadFavorites = async () => {
     try {
       const existingFavorites = await AsyncStorage.getItem("favorites");
-      // If no favorites exist in storage, initialize with empty array
       if (!existingFavorites) {
         await AsyncStorage.setItem("favorites", JSON.stringify([]));
         setFavorites([]);
@@ -29,16 +28,16 @@ export default function ScheduleScreen() {
       }
       setFavorites(JSON.parse(existingFavorites));
 
-      // Reset and initialize animation values
+      // Initialize animation values at 0
       animatedValues.current = sessions.map(() => new Animated.Value(0));
 
       // Start staggered animations
       Animated.stagger(
-        100, // Delay between each animation
+        100,
         animatedValues.current.map((value) =>
           Animated.spring(value, {
             toValue: 1,
-            tension: 50,
+            tension: 40,
             friction: 7,
             useNativeDriver: true,
           })
@@ -46,7 +45,6 @@ export default function ScheduleScreen() {
       ).start();
     } catch (error) {
       console.error("Error loading favorites:", error);
-      // If there's an error, ensure we start with empty favorites
       setFavorites([]);
     }
   };
@@ -61,7 +59,7 @@ export default function ScheduleScreen() {
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1000,
+      duration: 300,
       useNativeDriver: true,
     }).start();
   }, []);
@@ -70,11 +68,9 @@ export default function ScheduleScreen() {
     try {
       const newFavorites = [...favorites];
       if (newFavorites.includes(sessionId)) {
-        // Remove from favorites
         const index = newFavorites.indexOf(sessionId);
         newFavorites.splice(index, 1);
       } else {
-        // Add to favorites
         newFavorites.push(sessionId);
       }
       await AsyncStorage.setItem("favorites", JSON.stringify(newFavorites));

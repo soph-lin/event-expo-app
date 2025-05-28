@@ -2,15 +2,15 @@ import { Theme } from "@/types/theme";
 
 export const THEMES: Theme[] = [
   {
-    name: "Pastel",
+    name: "Sakura",
     colors: {
       background: "#F8E8EE",
       text: "#867070",
-      card: "#ffb6c1", // Light pink
+      card: "#ffb6c1",
       cardText: "#867070",
       gradient: ["#F8E8EE", "#ffb6c1"] as [string, string],
     },
-    icon: "nutrition",
+    icon: "flower",
   },
   {
     name: "Nature",

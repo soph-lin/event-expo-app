@@ -7,56 +7,8 @@ import {
   useState,
 } from "react";
 
-export type ThemeColors = {
-  background: string;
-  text: string;
-  card: string;
-  cardText: string;
-  gradient: [string, string];
-};
-
-export type Theme = {
-  name: string;
-  colors: ThemeColors;
-  icon: string;
-};
-
-export const THEMES: Theme[] = [
-  {
-    name: "Strawberry",
-    colors: {
-      background: "#FF6B6B",
-      text: "#FFFFFF",
-      card: "#4ECDC4",
-      cardText: "#2C3E50",
-      gradient: ["#FF6B6B", "#FFB6C1"] as [string, string],
-    },
-    icon: "sunny",
-  },
-  {
-    name: "Neon",
-    colors: {
-      background: "#2C3E50",
-      text: "#FFFFFF",
-      card: "#9B59B6",
-      cardText: "#FFFFFF",
-      gradient: ["#2C3E50", "#3498DB"] as [string, string],
-    },
-    icon: "moon",
-  },
-  {
-    name: "Coffee Shop",
-    colors: {
-      background: "#F4ECD8",
-      text: "#5B4036",
-      card: "#E6D5C3",
-      cardText: "#5B4036",
-      gradient: ["#F4ECD8", "#E6D5C3"] as [string, string],
-    },
-    icon: "cafe",
-  },
-];
-
+import { Theme, ThemeColors } from "@/types/theme";
+import { THEMES } from "@/utils/themes";
 type ThemeContextType = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
