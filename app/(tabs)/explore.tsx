@@ -24,6 +24,10 @@ const MAX_ZOOM = 4;
 export default function TabTwoScreen() {
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const savedTranslateX = useSharedValue(0);
+  const savedTranslateY = useSharedValue(0);
   const [currentZoomLevel, setCurrentZoomLevel] = useState(0);
 
   const pinchGesture = Gesture.Pinch()
@@ -37,6 +41,18 @@ export default function TabTwoScreen() {
       savedScale.value = scale.value;
     });
 
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateX.value = savedTranslateX.value + event.translationX;
+      translateY.value = savedTranslateY.value + event.translationY;
+    })
+    .onEnd(() => {
+      savedTranslateX.value = translateX.value;
+      savedTranslateY.value = translateY.value;
+    });
+
+  const composed = Gesture.Simultaneous(pinchGesture, panGesture);
+
   const handleZoomIn = useCallback(() => {
     const nextLevel = (currentZoomLevel + 1) % ZOOM_LEVELS.length;
     setCurrentZoomLevel(nextLevel);
@@ -45,7 +61,11 @@ export default function TabTwoScreen() {
   }, [currentZoomLevel]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }, { translateX: 0 }, { translateY: 0 }],
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
   }));
 
   return (
@@ -60,7 +80,7 @@ export default function TabTwoScreen() {
 
           <View style={styles.contentContainer}>
             <View style={styles.mapContainer}>
-              <GestureDetector gesture={pinchGesture}>
+              <GestureDetector gesture={composed}>
                 <Animated.View style={[styles.mapWrapper, animatedStyle]}>
                   <Image
                     source={require("@/assets/images/placeholder-map.jpg")}
