@@ -6,6 +6,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
 import { ThemedText } from "@/components/ThemedText";
+import { useTheme } from "@/hooks/useTheme";
 import { Session } from "@/types";
 
 interface SessionCardProps {
@@ -22,6 +23,7 @@ export function SessionCard({
   swipeableRef,
 }: SessionCardProps) {
   const router = useRouter();
+  const { colors } = useTheme();
   const localSwipeableRef = useRef<Swipeable>(null);
   const currentSwipeableRef = swipeableRef || localSwipeableRef;
 
@@ -50,16 +52,21 @@ export function SessionCard({
       style={styles.sessionCard}
       onPress={() => router.push(`/session/${session.id}`)}
     >
-      <LinearGradient
-        colors={["#A1CEDC", "#D0D0D0"]}
-        style={styles.cardGradient}
-      >
-        <Ionicons name="calendar" size={24} color="#fff" style={styles.icon} />
+      <LinearGradient colors={colors.gradient} style={styles.cardGradient}>
+        <Ionicons
+          name="calendar"
+          size={24}
+          color={colors.cardText}
+          style={styles.icon}
+        />
         <View style={styles.cardContent}>
-          <ThemedText type="defaultSemiBold" style={styles.cardTitle}>
+          <ThemedText
+            type="defaultSemiBold"
+            style={[styles.cardTitle, { color: colors.cardText }]}
+          >
             {session.title}
           </ThemedText>
-          <ThemedText style={styles.cardDetails}>
+          <ThemedText style={[styles.cardDetails, { color: colors.cardText }]}>
             {session.time} - {session.speaker}
           </ThemedText>
         </View>
@@ -77,7 +84,6 @@ export function SessionCard({
         overshootRight={false}
         enableTrackpadTwoFingerGesture
         onSwipeableOpen={() => {
-          // Add a slight delay before closing to show the star
           setTimeout(() => {
             currentSwipeableRef.current?.close();
           }, 500);
@@ -115,12 +121,10 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    color: "#fff",
     marginBottom: 4,
   },
   cardDetails: {
     fontSize: 14,
-    color: "#fff",
   },
   favoriteButton: {
     justifyContent: "center",

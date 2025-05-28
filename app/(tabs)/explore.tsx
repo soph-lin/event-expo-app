@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useCallback, useState } from "react";
@@ -22,6 +23,7 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
 
 export default function TabTwoScreen() {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -68,9 +70,76 @@ export default function TabTwoScreen() {
     ],
   }));
 
+  const handleZoom = () => {
+    const currentIndex = ZOOM_LEVELS.indexOf(Math.round(savedScale.value));
+    const nextIndex = (currentIndex + 1) % ZOOM_LEVELS.length;
+    const newScale = ZOOM_LEVELS[nextIndex];
+
+    scale.value = withSpring(newScale);
+    savedScale.value = newScale;
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    headerContainer: {
+      backgroundColor: colors.background,
+      zIndex: 1,
+    },
+    header: {
+      padding: 16,
+    },
+    contentContainer: {
+      flex: 1,
+      position: "relative",
+    },
+    mapContainer: {
+      flex: 1,
+      backgroundColor: colors.card,
+      overflow: "hidden",
+    },
+    mapWrapper: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      transformOrigin: "center",
+    },
+    map: {
+      width: "100%",
+      height: "100%",
+    },
+    zoomButton: {
+      position: "absolute",
+      bottom: 32,
+      right: 32,
+      backgroundColor: colors.card,
+      borderRadius: 25,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    zoomText: {
+      marginLeft: 8,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  });
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["top"]}
+      >
         <ThemedView style={styles.container}>
           <View style={styles.headerContainer}>
             <ThemedText type="title" style={styles.header}>
@@ -84,18 +153,15 @@ export default function TabTwoScreen() {
                 <Animated.View style={[styles.mapWrapper, animatedStyle]}>
                   <Image
                     source={require("@/assets/images/placeholder-map.jpg")}
-                    style={styles.map}
+                    style={[styles.map, { backgroundColor: colors.card }]}
                     contentFit="cover"
                   />
                 </Animated.View>
               </GestureDetector>
             </View>
 
-            <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
-              <Ionicons name="add-circle" size={32} color="#A1CEDC" />
-              <ThemedText style={styles.zoomText}>
-                {ZOOM_LEVELS[currentZoomLevel]}x
-              </ThemedText>
+            <TouchableOpacity style={styles.zoomButton} onPress={handleZoom}>
+              <Ionicons name="add" size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
         </ThemedView>
@@ -103,58 +169,3 @@ export default function TabTwoScreen() {
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerContainer: {
-    backgroundColor: "white",
-    zIndex: 1,
-  },
-  header: {
-    padding: 16,
-  },
-  contentContainer: {
-    flex: 1,
-    position: "relative",
-  },
-  mapContainer: {
-    flex: 1,
-    backgroundColor: "#f0f0f0",
-    overflow: "hidden",
-  },
-  mapWrapper: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    transformOrigin: "center",
-  },
-  map: {
-    width: "100%",
-    height: "100%",
-  },
-  zoomButton: {
-    position: "absolute",
-    bottom: 32,
-    right: 32,
-    backgroundColor: "white",
-    borderRadius: 25,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  zoomText: {
-    marginLeft: 8,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});

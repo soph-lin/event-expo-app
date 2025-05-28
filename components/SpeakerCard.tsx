@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import { Speaker } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, StyleSheet, View } from "react-native";
@@ -8,12 +9,11 @@ interface SpeakerCardProps {
 }
 
 export function SpeakerCard({ speaker }: SpeakerCardProps) {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.speakerCard}>
-      <LinearGradient
-        colors={["#A1CEDC", "#D0D0D0"]}
-        style={styles.cardGradient}
-      >
+      <LinearGradient colors={colors.gradient} style={styles.cardGradient}>
         <View style={styles.content}>
           <Image
             source={{ uri: speaker.photo }}
@@ -24,10 +24,16 @@ export function SpeakerCard({ speaker }: SpeakerCardProps) {
             }
           />
           <View style={styles.textContainer}>
-            <ThemedText type="defaultSemiBold" style={styles.name}>
+            <ThemedText
+              type="defaultSemiBold"
+              style={[styles.name, { color: colors.cardText }]}
+            >
               {speaker.name}
             </ThemedText>
-            <ThemedText style={styles.bio} numberOfLines={2}>
+            <ThemedText
+              style={[styles.bio, { color: colors.cardText }]}
+              numberOfLines={2}
+            >
               {speaker.bio}
             </ThemedText>
           </View>
@@ -69,12 +75,10 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
-    color: "#fff",
     marginBottom: 4,
   },
   bio: {
     fontSize: 14,
-    color: "#fff",
     opacity: 0.9,
   },
 });

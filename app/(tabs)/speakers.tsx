@@ -6,10 +6,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SpeakerCard } from "@/components/SpeakerCard";
 import { ThemedText } from "@/components/ThemedText";
+import { useTheme } from "@/hooks/useTheme";
 import { Speaker } from "@/types";
 import { speakers } from "@/utils/mockData";
 
 export default function SpeakersScreen() {
+  const { colors } = useTheme();
   const [loadedSpeakers, setLoadedSpeakers] = useState<Speaker[]>([]);
   const animatedValues = useRef<Animated.Value[]>([]);
 
@@ -60,7 +62,10 @@ export default function SpeakersScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["top"]}
+      >
         <ThemedText type="title" style={styles.header}>
           Speakers
         </ThemedText>

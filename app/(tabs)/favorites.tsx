@@ -7,11 +7,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SessionCard } from "@/components/SessionCard";
 import { ThemedText } from "@/components/ThemedText";
+import { useTheme } from "@/hooks/useTheme";
 import { Session } from "@/types";
 import { sessions } from "@/utils/mockData";
 
 export default function FavoritesScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const fadeAnim = new Animated.Value(0);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [favoritedSessions, setFavoritedSessions] = useState<Session[]>([]);
@@ -114,7 +116,10 @@ export default function FavoritesScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["top"]}
+      >
         <ThemedText type="title" style={styles.header}>
           Favorites
         </ThemedText>
