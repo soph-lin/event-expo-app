@@ -77,6 +77,7 @@ export default function TabTwoScreen() {
 
     scale.value = withSpring(newScale);
     savedScale.value = newScale;
+    setCurrentZoomLevel(nextIndex);
   };
 
   const styles = StyleSheet.create({
@@ -161,7 +162,13 @@ export default function TabTwoScreen() {
             </View>
 
             <TouchableOpacity style={styles.zoomButton} onPress={handleZoom}>
-              <Ionicons name="add" size={24} color={colors.text} />
+              <Ionicons
+                name={
+                  currentZoomLevel === ZOOM_LEVELS.length - 1 ? "remove" : "add"
+                }
+                size={24}
+                color={colors.text}
+              />
             </TouchableOpacity>
           </View>
         </ThemedView>
