@@ -31,10 +31,7 @@ export default function RootLayout() {
             }}
           />
           <View
-            style={[
-              { position: "absolute", top: 0, right: 0, zIndex: 1000 },
-              isSessionPage && { opacity: 0, pointerEvents: "none" },
-            ]}
+            style={[{ position: "absolute", top: 0, right: 0, zIndex: 1000 }]}
           >
             <ThemePicker />
           </View>
