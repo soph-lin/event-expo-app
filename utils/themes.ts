@@ -34,4 +34,26 @@ export const THEMES: Theme[] = [
     },
     icon: "cafe",
   },
+  {
+    name: "Sunny",
+    colors: {
+      background: "#FFF9C4",
+      text: "#F57F17",
+      card: "#FFEB3B",
+      cardText: "#F57F17",
+      gradient: ["#FFF9C4", "#FFEB3B"] as [string, string],
+    },
+    icon: "sunny",
+  },
+  {
+    name: "Night",
+    colors: {
+      background: "#2C1B47",
+      text: "#E1E1E1",
+      card: "#4A2B6B",
+      cardText: "#E1E1E1",
+      gradient: ["#2C1B47", "#4A2B6B"] as [string, string],
+    },
+    icon: "moon",
+  },
 ]; 
