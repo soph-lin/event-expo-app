@@ -2,6 +2,9 @@
 
 A modern, cross-platform mobile application built with React Native and Expo for managing and exploring events. This demo app showcases a beautiful UI with smooth animations, theme customization, and interactive features.
 
+https://github.com/user-attachments/assets/d004490f-b311-4cc7-8e42-b57f8ddc6c30
+
+
 ## Features
 
 - 🎨 Customizable themes with smooth transitions
